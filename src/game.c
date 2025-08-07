@@ -2,10 +2,11 @@
 
 #include <math.h>
 #include <ncurses.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "News.h"
 #include "Player.h"
+#include "News.h"
 //TODO
 //BUY/SELLING
 //ADD THE NEWS
@@ -27,7 +28,7 @@ void preword() {
     int x,y;
     curs_set(0);
 
-    const char preword1[] = "You just got fired from your job and with a new baby on the way your wife is asking if you can stay home and watch him. You ethusastically accept but realize that babies dont do much besides eat poop and sleep.";
+    const char preword1[] = "You just got fired from your job and with a new baby on the way your wife is asking if you can stay home and watch him. You enthusiastically accept but realize that babies dont do much besides eat poop and sleep.";
     const char preword2[] = "Wanting to contribute to the growing bills you take some money that you have saved and open an account on this new website...";
 
     clear();
@@ -39,7 +40,6 @@ void preword() {
     }
     getyx(stdscr, y,x);
     y+=2;
-    x = 0;
     move(y,0);
     for (int i = 0; i < strlen(preword2); i++) {
         addch(preword2[i]);
@@ -67,11 +67,10 @@ void preword() {
 void end_game(struct Player* player) {
     calculateNetWorth(player);
     clear();
-    int x,y;
     curs_set(0);
 
     static const char end_game_std[] = "Your child is going to be starting preschool soon and you are now prepared to show your wife what you have done the past 5 years.";
-    static const char end_game_neutral[] = "You started with $%d and now have $%lf. Your wife is neither disappointed nor pleased with this activiety ";
+    static const char end_game_neutral[] = "You started with $%d and now have $%lf. Your wife is neither disappointed nor pleased with this activity";
     static const char end_game_negative[] = "You lost your family %lf dollars from the starting $%lf and your wife is saying you have a gambling addiction";
     static const char end_game_positive[] = "From the starting $%d you now have $%lf. Your family is overjoyed at this return. They think you might have a real talent for this.";
     char* placeholder = malloc(sizeof(char)*100);
@@ -84,7 +83,7 @@ void end_game(struct Player* player) {
 
     }
     addstr("\n");
-    float percent_change = calculate_percent_change(STARTING_CASH, player->totalNetWorth);
+    float percent_change = calculate_percent_change(STARTING_CASH, (float)player->totalNetWorth);
 
 
     if (percent_change >= POSITIVE_RETURN) {
@@ -109,7 +108,7 @@ void end_game(struct Player* player) {
         }
     }
     else {
-        sprintf(placeholder, end_game_negative, player->totalNetWorth-STARTING_CASH, STARTING_CASH);
+        sprintf(placeholder, end_game_negative, player->totalNetWorth-STARTING_CASH, (float)STARTING_CASH);
 
         for(int i = 0; i < strlen(placeholder); i++) {
             addch(placeholder[i]);
@@ -126,14 +125,12 @@ void end_game(struct Player* player) {
 
 
 
-//should quit game
-    return;
 
 
 
 }
 
-//inits all parts of the game
+//init all parts of the game
 void init_game() {
     srand(time(NULL));
 
@@ -155,7 +152,6 @@ void purchase_menu(struct Player* player) {
     clear();
 
     uint8_t selected = 0;
-    int key;
     int x,y;
 
     clear();
@@ -218,7 +214,7 @@ attroff(A_DIM | A_ITALIC);
     }else       mvprintw(y+2, 0, "Press S To Purchase");
 
         refresh();
-        key = getch();
+        int key = getch();
         switch (key) {
             case 's':
                 isPurchase = !isPurchase;
@@ -267,6 +263,8 @@ attroff(A_DIM | A_ITALIC);
                 if (selected == 11) {}
 
                 break;
+            default:
+                break;
 
         }
 
@@ -278,7 +276,7 @@ attroff(A_DIM | A_ITALIC);
 }
 
 
-void show_news(struct Player* player) {
+void show_news(const struct Player* player) {
 clear();
     if (!strlen(player->news[0].text)) {
         mvprintw(0,0, "There is currently no news.");

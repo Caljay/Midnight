@@ -5,15 +5,7 @@
 #include <string.h>
 #include "Stocks.h"
 
-//controls the volatility
-//aka random fluctuations in price
 
-
-//controls the average growth rate over time
-// > 0 tends to increase
-// = 0 stays roughly the same
-// < 0 price tends to decrease
-//changing this can change the "trend"
 
 float rand_normal() {
     double u1 = rand() / (double) RAND_MAX;
