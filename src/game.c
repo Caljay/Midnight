@@ -70,24 +70,24 @@ void end_game(struct Player* player) {
     curs_set(0);
 
     static const char end_game_std[] = "Your child is going to be starting preschool soon and you are now prepared to show your wife what you have done the past 5 years.";
-    static const char end_game_neutral[] = "You started with $%d and now have $%lf. Your wife is neither disappointed nor pleased with this activity";
-    static const char end_game_negative[] = "You lost your family %lf dollars from the starting $%lf and your wife is saying you have a gambling addiction";
-    static const char end_game_positive[] = "From the starting $%d you now have $%lf. Your family is overjoyed at this return. They think you might have a real talent for this.";
-    char* placeholder = malloc(sizeof(char)*100);
+    static const char end_game_neutral[] = "You started with $%.2lf and now have $%.2lf. Your wife is neither disappointed nor pleased with this activity";
+    static const char end_game_negative[] = "You lost your family %.2lf dollars from the starting $%.2lf and your wife is saying you have a gambling addiction";
+    static const char end_game_positive[] = "From the starting $%.2lf you now have $%.2lf. Your family is overjoyed at this return. They think you might have a real talent for this.";
+    char* placeholder = malloc(sizeof(char)*150);
 
     clear();
     for (int i = 0; i < strlen(end_game_std); i++) {
         addch(end_game_std[i]);
-        delay_output(PRINT_DELAY_MS);
+       delay_output(PRINT_DELAY_MS);
         refresh();
 
     }
     addstr("\n");
-    float percent_change = calculate_percent_change(STARTING_CASH, (float)player->totalNetWorth);
+    float percent_change = 100*calculate_percent_change(STARTING_CASH, (float)player->totalNetWorth);
 
 
     if (percent_change >= POSITIVE_RETURN) {
-        sprintf(placeholder, end_game_positive, STARTING_CASH, player->totalNetWorth);
+        sprintf(placeholder, end_game_positive, (double)STARTING_CASH, player->totalNetWorth);
 
         for(int i = 0; i < strlen(placeholder); i++) {
             addch(placeholder[i]);
@@ -97,7 +97,8 @@ void end_game(struct Player* player) {
         }
     }
     else if (percent_change <= NEGATIVE_RETURN) {
-        sprintf(placeholder, end_game_neutral, STARTING_CASH, player->totalNetWorth);
+        sprintf(placeholder, end_game_negative, player->totalNetWorth-STARTING_CASH, (float)STARTING_CASH);
+
 
         for(int i = 0; i < strlen(placeholder); i++) {
 
@@ -108,8 +109,7 @@ void end_game(struct Player* player) {
         }
     }
     else {
-        sprintf(placeholder, end_game_negative, player->totalNetWorth-STARTING_CASH, (float)STARTING_CASH);
-
+        sprintf(placeholder, end_game_neutral, (double)STARTING_CASH, player->totalNetWorth);
         for(int i = 0; i < strlen(placeholder); i++) {
             addch(placeholder[i]);
             delay_output(PRINT_DELAY_MS);
